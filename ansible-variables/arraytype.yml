@@ -1,0 +1,31 @@
+### Using a list variable and accessing its elements
+# This section focuses on a list variable named datalist, containing multiple elements. It demonstrates displaying the entire list, accessing the first element using dot notation (datalist.0), and accessing the first element using bracket notation (datalist[0]).
+
+
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    # Defining a list variable
+    datalist:
+    - element1
+    - element2
+    - element3
+    - element4
+    # Defining an inline list variable
+    #datalist2:
+    #  [ item1, item2, item3, item4 ]
+
+
+  tasks:
+  - name: Displaying inline list
+    debug:
+      msg: "{{ datalist }}"
+
+  - name: Accessing first item in inline list using dot notation
+    debug:
+      msg: "{{ datalist.2 }}"
+
+  - name: Accessing first item in inline list using bracket notation
+    debug:
+      msg: "{{ datalist[0] }}"
