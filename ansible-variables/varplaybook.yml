@@ -1,0 +1,29 @@
+
+- hosts: localhost
+  gather_facts: False
+
+  vars:
+    # Defining a dictionary variable
+    #dict_inline
+    #   {dict_key1: Hello from inline dictionary, dict_key2: value2}
+
+    sahil_var: #variable ka name jo marji rakho 
+      team1: Pardhuman
+      team2: Rohit
+
+  tasks:
+  #  - name: Displaying the entire dictionary
+  #   debug:
+  #    msg: "{{ sample_dict }}"
+
+  - name: Accessing dictionary key using dot notation
+    debug:
+      msg: "{{ sahil_var.team1 }}"
+
+  #   - name: Accessing dictionary key using bracket notation
+  #    debug:
+#     msg: "{{ sample_dict['dict_key2'] }}"
+
+
+
+
