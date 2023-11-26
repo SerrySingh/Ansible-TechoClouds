@@ -1,0 +1,46 @@
+- name: Install WordPress on Amazon Linux
+  hosts: xyz
+  become: true
+  gather_facts: false
+
+  tasks:
+  - name: Install wget
+    raw: yum -y install wget
+    become: yes
+
+  - name: Download and Extract WordPress
+    raw: "cd /var/www/html && wget https://wordpress.org/latest.tar.gz && tar -zxvf latest.tar.gz && rm latest.tar.gz"
+    become: yes
+
+  - name: Rename wp-config-sample.php to wp-config.php if it exists
+    raw: "mv  /var/www/html/wordpress/wp-config-sample.php  /var/www/html/wordpress/wp-config.php"
+    become: yes
+    ignore_errors: yes
+
+  - name: Update database name in wp-config.php
+    # your db name 
+    raw: "sed -i 's+database_name_here+DB-NAME+g' /var/www/html/wordpress/wp-config.php"
+    become: yes
+    ignore_errors: yes
+
+
+  - name: Update database username in wp-config.php
+    #your username
+    raw: "sed -i 's+username_here+USER_NAME+g' /var/www/html/wordpress/wp-config.php"
+
+  - name: Update database password in wp-config.php
+    #your passwd
+    raw: "sed -i 's+password_here+yourpasswd+g' /var/www/html/wordpress/wp-config.php"
+    become: yes
+    ignore_errors: yes
+
+  - name: Change Apache configuration
+    #   Apache config file change
+    raw: "sed -i 's+/var/www/html+/var/www/html/wordpress+g' /etc/httpd/conf/httpd.conf"
+    become: yes
+
+  #   restart Apache
+  - name: Restart Apache
+    raw: "systemctl restart httpd"
+    become: yes
+

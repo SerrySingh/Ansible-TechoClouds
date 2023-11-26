@@ -1,0 +1,39 @@
+- name: Configure WordPress Installation
+  hosts: xyz
+  become: true
+
+  tasks:
+
+  #   restart Apache
+  - name: Restart Apache
+    raw: "systemctl restart httpd"
+    become: yes
+
+  # MariaDB install
+  - name: Start MariaDB
+    raw: "systemctl start mariadb"
+    become: yes
+
+  - name: Enable MariaDB at boot
+    raw: "systemctl enable mariadb"
+    become: yes
+
+  - name: Create WordPress database
+    raw: "mysql -e 'create database DB-NAME;'" # your DB-NAME
+    become: yes
+
+  - name: Create MySQL user # your USER_NAME  & PASSWD
+    raw: "mysql -e 'CREATE USER \"USER-NAME\"@\"localhost\" IDENTIFIED BY \"PASSWD\";'"
+    become: yes
+
+  - name: Grant privileges to MySQL user # your DB_NAME  & USER_NAME
+    raw: "mysql -e 'GRANT ALL PRIVILEGES ON DB_NAME.* TO \"USER_NAME\"@\"localhost\";'"
+    become: yes
+
+  - name: Flush MySQL privileges
+    raw: "mysql -e 'FLUSH PRIVILEGES;'"
+    become: yes
+
+  - name: Exit MySQL
+    raw: "mysql -e 'exit'"
+    become: yes

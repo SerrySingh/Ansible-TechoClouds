@@ -1,0 +1,13 @@
+- name: Install PHP on EC2
+  hosts: xyz
+  become: true
+  gather_facts: false
+  tasks:
+  - name: Update package cache
+    raw: yum -y update
+    become: yes
+
+  - name: Install required packages
+    command: "dnf install -y wget php-mysqlnd httpd php-fpm php-mysqli mariadb105-server php-json php php-devel"
+    become: yes
+

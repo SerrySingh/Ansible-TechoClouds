@@ -1,0 +1,93 @@
+- name: Install Apache on EC2
+  hosts: xyz
+  become: true
+  gather_facts: false
+  tasks:
+  - name: Update package cache
+    raw: yum -y update
+    become: yes
+
+  - name: Install Apache
+    raw: yum -y install httpd
+    become: yes
+
+  - name: Start Apache service
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    become: yes
+
+  - name: Install required packages
+    command: "dnf install -y wget php-mysqlnd httpd php-fpm php-mysqli mariadb105-server php-json php php-devel"
+    become: yes
+
+  - name: Install wget
+    raw: yum -y install wget
+    become: yes
+
+  - name: Download and Extract WordPress
+    raw: "cd /var/www/html && wget https://wordpress.org/latest.tar.gz && tar -zxvf latest.tar.gz && rm latest.tar.gz"
+    become: yes
+
+  - name: Rename wp-config-sample.php to wp-config.php if it exists
+    raw: "mv  /var/www/html/wordpress/wp-config-sample.php  /var/www/html/wordpress/wp-config.php"
+    become: yes
+    ignore_errors: yes
+
+
+  - name: Update database name in wp-config.php
+    # your db name 
+    raw: "sed -i 's+database_name_here+DB-NAME+g' /var/www/html/wordpress/wp-config.php"
+    become: yes
+    ignore_errors: yes
+
+
+  - name: Update database username in wp-config.php
+    #your username
+    raw: "sed -i 's+username_here+USER_NAME+g' /var/www/html/wordpress/wp-config.php"
+
+  - name: Update database password in wp-config.php
+    #your passwd
+    raw: "sed -i 's+password_here+yourpasswd+g' /var/www/html/wordpress/wp-config.php"
+    become: yes
+    ignore_errors: yes
+
+  - name: Change Apache configuration
+    #   Apache config file change
+    raw: "sed -i 's+/var/www/html+/var/www/html/wordpress+g' /etc/httpd/conf/httpd.conf"
+    become: yes
+
+  #   restart Apache
+  - name: Restart Apache
+    raw: "systemctl restart httpd"
+    become: yes
+
+  # MariaDB install
+  - name: Start MariaDB
+    raw: "systemctl start mariadb"
+    become: yes
+
+  - name: Enable MariaDB at boot
+    raw: "systemctl enable mariadb"
+    become: yes
+
+  - name: Create WordPress database
+    raw: "mysql -e 'create database DB-NAME;'" # your DB-NAME
+    become: yes
+
+  - name: Create MySQL user # your USER_NAME  & PASSWD
+    raw: "mysql -e 'CREATE USER \"USER-NAME\"@\"localhost\" IDENTIFIED BY \"PASSWD\";'"
+    become: yes
+
+  - name: Grant privileges to MySQL user # your DB_NAME  & USER_NAME
+    raw: "mysql -e 'GRANT ALL PRIVILEGES ON DB_NAME.* TO \"USER_NAME\"@\"localhost\";'"
+    become: yes
+
+  - name: Flush MySQL privileges
+    raw: "mysql -e 'FLUSH PRIVILEGES;'"
+    become: yes
+
+  - name: Exit MySQL
+    raw: "mysql -e 'exit'"
+    become: yes

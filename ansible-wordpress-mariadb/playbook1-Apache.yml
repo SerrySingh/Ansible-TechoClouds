@@ -1,0 +1,22 @@
+- name: Install Apache on EC2
+  hosts: xyz #group name , check your hosts file...
+  become: true
+  gather_facts: false
+  tasks:
+  - name: Update package cache
+    raw: yum -y update
+    become: yes
+
+  - name: Install Apache
+    raw: yum -y install httpd
+    become: yes
+
+  - name: Start Apache service
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    become: yes
+
+
+
